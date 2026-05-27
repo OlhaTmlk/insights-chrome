@@ -6,6 +6,8 @@ import { Switch } from '@patternfly/react-core/dist/dynamic/components/Switch';
 import { DropdownItem } from '@patternfly/react-core/dist/dynamic/components/Dropdown';
 import { ToolbarItem } from '@patternfly/react-core/dist/dynamic/components/Toolbar';
 import { Tooltip } from '@patternfly/react-core/dist/dynamic/components/Tooltip';
+import { ToggleGroup } from '@patternfly/react-core/dist/dynamic/components/ToggleGroup';
+import { ToggleGroupItem } from '@patternfly/react-core/dist/dynamic/components/ToggleGroup';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/dynamic/icons/question-circle-icon';
 import CogIcon from '@patternfly/react-icons/dist/dynamic/icons/cog-icon';
 import RedhatIcon from '@patternfly/react-icons/dist/dynamic/icons/redhat-icon';
@@ -33,6 +35,7 @@ import OutlinedSunIcon from '@patternfly/react-icons/dist/dynamic/icons/outlined
 import InternalChromeContext from '../../utils/internalChromeContext';
 import { ThemeVariants, useTheme } from '../../hooks/useTheme';
 import { useGlassTheme } from '../../hooks/useGlassTheme';
+import { HighContrastVariants, useHighContrast } from '../../hooks/useHighContrast';
 import './Tools.scss';
 
 const InternalButton = () => (
@@ -90,6 +93,7 @@ const Tools = () => {
   const isDarkModeEnabled = useFlag('platform.chrome.dark-mode');
   const isDarkModeSystemEnabled = useFlag('platform.chrome.dark-mode_system');
   const isGlassModeEnabled = useFlag('platform.chrome.glass-theme');
+  const isHighContrastEnabled = useFlag('platform.chrome.high-contrast');
   const { user, token } = useContext(ChromeAuthContext);
   const intl = useIntl();
   const isOrgAdmin = user?.identity?.user?.is_org_admin;
@@ -100,6 +104,7 @@ const Tools = () => {
   )}`;
   const { themeMode, setLightMode, setDarkMode, setSystemMode } = useTheme();
   const { isGlassTheme, toggleGlassTheme } = useGlassTheme(isGlassModeEnabled);
+  const { contrastMode, setDefaultContrast, setHighContrast, setSystemContrast } = useHighContrast();
 
   /* list out the items for the settings menu */
   const settingsMenuDropdownGroups = [
@@ -169,6 +174,36 @@ const Tools = () => {
             onChange={toggleGlassTheme}
           />
         </div>
+      ),
+    },
+    {
+      title: 'Contrast',
+      isHidden: !isHighContrastEnabled,
+      items: [],
+      customContent: (
+        <ToggleGroup aria-label="Contrast mode" className="pf-v6-u-mx-md pf-v6-u-my-sm">
+          <ToggleGroupItem
+            text="System"
+            buttonId="contrast-system"
+            isSelected={contrastMode === HighContrastVariants.system}
+            onChange={() => setSystemContrast()}
+            aria-label="System contrast"
+          />
+          <ToggleGroupItem
+            text="Default"
+            buttonId="contrast-default"
+            isSelected={contrastMode === HighContrastVariants.default}
+            onChange={() => setDefaultContrast()}
+            aria-label="Default contrast"
+          />
+          <ToggleGroupItem
+            text="High contrast"
+            buttonId="contrast-high"
+            isSelected={contrastMode === HighContrastVariants.high}
+            onChange={() => setHighContrast()}
+            aria-label="High contrast"
+          />
+        </ToggleGroup>
       ),
     },
     {
